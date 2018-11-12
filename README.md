@@ -1,27 +1,69 @@
-# AngularStructuralDirectives
+Las "structural directives" son las encargadas del diseño del DOM (manipulando, poniendo o quitando elementos). Son las que empiezan por *.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.5.
+Una de las más típicas es ***ngIf**
 
-## Development server
+¿Qué pasa cuando usamos *ngIf?
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Que esto:
 
-## Code scaffolding
+```html
+<div *ngIf="flag">
+  Content
+</div>
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Se convierte en esto:
 
-## Build
+```html
+<ng-template [ngIf]="flag">
+  <div>
+    Content
+  </div>
+</ng-template>
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Running unit tests
+Error típico:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```html
+<a mat-icon-button [cdtyRequireRol]="rol" >Link</a>
+```
 
-## Running end-to-end tests
+Error: More than one component matched on this element
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+*Nota: no sabemos cómo está implementada esta directiva
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+¿Cuál sería la manera correcta de implementar esto?
+
+```typescript
+import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+import { RolesService } from 'app/coderty-core-front/shared/providers/roles/roles.service';
+
+@Directive({
+  selector: '[cdtyRequireRol]'
+})
+export class CdtyRequireRolDirective {
+  @Input()
+  set cdtyRequireRol(rol) {
+    console.log
+    if (this.rolesService.requireRol(rol)) {
+      this.entry.createEmbeddedView(this.template);
+    }else{
+      this.entry.clear();
+    }
+  }
+
+  constructor(private template: TemplateRef<any>, 
+              private entry: ViewContainerRef, 
+              private rolesService: RolesService) {}
+}
+
+```
+
+y para usarlo...
+
+
+```html
+<a mat-icon-button *cdtyRequireRol="'rol'" >Link</a>
+```
