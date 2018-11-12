@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'angular-structural-directives';
+  flag = true;
+
+  toggle() {
+    this.flag = !this.flag;
+  }
 }
